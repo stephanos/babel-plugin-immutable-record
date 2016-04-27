@@ -1,0 +1,44 @@
+{
+  "name": "babel-plugin-immutable-record",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stephanos/babel-plugin-immutable-record"
+  },
+  "engines": {
+    "node": ">= 6.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^6.0.3",
+    "babel-preset-es2015-node6": "^0.1.1",
+    "del": "^2.2.0",
+    "eslint": "^2.8.0",
+    "eslint-config-airbnb-base": "^1.0.3",
+    "eslint-plugin-import": "^1.5.0",
+    "gulp": "git://github.com/gulpjs/gulp.git#4.0",
+    "gulp-babel": "^6.1.2",
+    "gulp-callback": "0.0.3",
+    "gulp-coveralls": "^0.1.4",
+    "gulp-eslint": "^2.0.0",
+    "gulp-espower": "^1.0.2",
+    "gulp-if": "^2.0.0",
+    "gulp-istanbul": "^0.10.4",
+    "gulp-mocha": "^2.2.0",
+    "gulp-sourcemaps": "^2.0.0-alpha",
+    "gulp-util": "^3.0.7",
+    "isparta": "^4.0.0",
+    "power-assert": "^1.3.1"
+  },
+  "dependencies": {
+    "babel-core": "^6.7.7",
+    "babel-plugin-syntax-class-properties": "^6.5.0",
+    "babel-plugin-syntax-decorators": "^6.5.0",
+    "babel-plugin-syntax-flow": "^6.5.0"
+  },
+  "scripts": {
+    "start": "gulp dev",
+    "build": "gulp default"
+  }
+}

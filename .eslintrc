@@ -1,0 +1,15 @@
+{
+  "parser": "babel-eslint",
+
+  "extends": "airbnb-base",
+
+  "env": {
+    "mocha": true,
+    "node": true
+  },
+
+  "rules": {
+    "max-len": 0,
+    "new-cap": 0
+  }
+}
