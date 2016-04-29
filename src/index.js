@@ -1,4 +1,4 @@
-/* eslint no-param-reassign:0 */
+/* eslint no-param-reassign:0 no-restricted-syntax:0 */
 
 const DATA_DECORATOR = 'Data';
 
@@ -14,10 +14,16 @@ const UPDATE_PARAMETER_NAME = 'update';
 const UPDATE_PARAMETER_TYPE_SUFFIX = 'Update';
 
 
-function getDecoratorsNamed(node, decoratorName) {
-  const decorators = node.decorators || [];
-  return decorators.filter((decorator) =>
-    decorator.expression.callee.name === decoratorName);
+function findDecorator(classPath) {
+  let ret;
+  classPath.traverse({
+    Decorator(decoratorPath) {
+      if (decoratorPath.node.expression.callee.name === DATA_DECORATOR) {
+        ret = decoratorPath;
+      }
+    },
+  });
+  return ret;
 }
 
 function getInnerType(typeAnnotation) {
@@ -246,28 +252,16 @@ function createGetters(t, properties) {
   });
 }
 
-function convertDecoratorToFunctionCall(t, className, decorator) {
-  return t.expressionStatement(
-    t.callExpression(
-      t.callExpression(decorator.expression.callee, decorator.expression.arguments),
-      [t.identifier(className)]
-    )
-  );
-}
-
 function makeImmutable(t, classPath) {
-  const decorators = getDecoratorsNamed(classPath.node, DATA_DECORATOR);
-  if (decorators.length === 0) {
+  const decoratorPath = findDecorator(classPath);
+  if (decoratorPath === undefined) {
     return;
   }
+  decoratorPath.addComment('leading', '::`');
+  decoratorPath.addComment('trailing', '::`;');
 
   const classBody = classPath.node.body.body;
   const className = classPath.node.id.name;
-
-  classPath.insertAfter(
-    convertDecoratorToFunctionCall(t, className, decorators[0])
-  );
-  classPath.node.decorators = [];
 
   const superClassNode = t.memberExpression(
     t.identifier(DATA_DECORATOR), t.identifier(SUPER_CLASS_NAME));
@@ -277,10 +271,6 @@ function makeImmutable(t, classPath) {
   checkPropertyNames(classPath, properties);
   checkPropertyTypes(t, classPath, properties);
   createGetters(t, properties).forEach((getter) => classBody.push(getter));
-
-  classPath.insertBefore(
-    createImportForImmutableMap(t, classPath)
-  );
 
   checkThereIsNoConstructor(classPath);
   const initDataType = className + INIT_PARAMETER_TYPE_SUFFIX;
@@ -309,6 +299,15 @@ function makeImmutable(t, classPath) {
     prop.key.name = `__${prop.key.name}`;
     prop.value = null;
   });
+
+  // TODO: check an import for the decorator is there
+  const fileBody = classPath.parentPath.node.body;
+  for (const i in fileBody) {
+    if (t.isImportDeclaration(fileBody[i])) {
+      fileBody.splice(i + 1, 0, createImportForImmutableMap(t));
+      break;
+    }
+  }
 }
 
 

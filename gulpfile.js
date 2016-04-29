@@ -1,11 +1,14 @@
 const del = require('del');
 const gulp = require('gulp');
 const path = require('path');
+
+const flow = require('gulp-flowtype');
 const gutil = require('gulp-util');
 const isparta = require('isparta');
 const gulpif = require('gulp-if');
 const babel = require('gulp-babel');
 const mocha = require('gulp-mocha');
+const rename = require('gulp-rename');
 const eslint = require('gulp-eslint');
 const espower = require('gulp-espower');
 const istanbul = require('gulp-istanbul');
@@ -30,7 +33,7 @@ gulp.task('clean', function(done) {
 });
 
 gulp.task('build', function () {
-  return gulp.src(['src/**/*.js', '!src/**/fixtures/**/*.js'])
+  return gulp.src(['src/**/*.js'])
     .pipe(sourcemaps.init())
     .pipe(babel())
     .on('error', handleError)
@@ -38,26 +41,44 @@ gulp.task('build', function () {
     .pipe(gulp.dest('dist'));
 });
 
+gulp.task('build-test', function () {
+  return gulp.src(['src/fixtures/*/output.js'])
+    .pipe(sourcemaps.init())
+    .pipe(babel())
+    .on('error', handleError)
+    .pipe(rename(function (path) {
+      path.extname = '.es6.js';
+    }))
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest('dist'));
+});
+
+gulp.task('typecheck', function() {
+  return gulp.src(['src/**/*.js', '!src/fixtures/**/input.js'])
+    .pipe(flow({
+      abort: !daemon,
+    }));
+});
+
 gulp.task('lint', function () {
-  return gulp.src(['src/**/*.js', '!src/**/fixtures/**/*.js'])
+  return gulp.src(['src/**/*.js', '!src/fixtures/**/*.js'])
     .pipe(eslint())
     .pipe(eslint.format())
     .pipe(gulpif(!daemon, eslint.failAfterError()));
 });
 
 gulp.task('unit-test', function (done) {
-  gulp.src(['src/**/*.js', '!src/**/*.spec.js', '!src/**/fixtures/**/*.js'])
+  gulp.src(['src/**/*.js', '!src/**/*.spec.js', '!src/fixtures/**/*.js'])
     .pipe(istanbul({
       instrumenter: isparta.Instrumenter,
       includeUntested: true
     }))
     .pipe(istanbul.hookRequire())
     .on('finish', function() {
-      gulp.src('src/**/*.spec.js', {read: false})
+      gulp.src(['src/**/*.spec.js', '!src/types.spec.js'], {read: false})
         .pipe(mocha({
           ui: 'bdd',
           reporter: 'dot',
-
         }))
         .on('error', (err) => {
           handleError(err);
@@ -95,7 +116,7 @@ gulp.task('_daemon', (done) => {
 
 
 gulp.task('package',
-  gulp.series('build', 'lint', 'unit-test', 'coveralls'));
+  gulp.series('build', 'build-test', 'lint', 'typecheck', 'unit-test', 'coveralls'));
 
 gulp.task('dev',
   gulp.series('_daemon', 'clean', 'package', 'watch'));

@@ -12,11 +12,11 @@ const REQUIRED_PLUGINS = [
 ];
 
 function testFixture(dir) {
-  const input = fs.readFileSync(path.join(__dirname, 'fixtures', dir, 'input.js'), 'utf8');
-  const output = transform(input, {
+  const fixtureDir = path.join(__dirname, 'fixtures', dir);
+  const output = transform(fs.readFileSync(path.join(fixtureDir, 'input.js'), 'utf8'), {
     plugins: REQUIRED_PLUGINS.concat([plugin]),
   }).code;
-  const expectedOutput = fs.readFileSync(path.join(__dirname, 'fixtures', dir, 'output.js'), 'utf8');
+  const expectedOutput = fs.readFileSync(path.join(fixtureDir, 'output.js'), 'utf8');
   assert.equal(output.trim(), expectedOutput.trim());
 }
 
@@ -25,7 +25,6 @@ describe('applying data transformer to', () => {
   describe('a data component', () => {
     it('should make it immutable', () => {
       testFixture('simple-data');
-      testFixture('nested-data');
     });
 
     describe('with a constructor', () => {

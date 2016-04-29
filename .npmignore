@@ -3,3 +3,4 @@ lib
 coverage
 node_modules
 dist/*.spec.js
+dist/fixtures/**

@@ -1,6 +1,11 @@
+/* @flow */
+
+import Data from '../decorator';
+
 import { Map } from 'immutable';
 
-class MyData extends Data.Base {
+/*::`*/@Data('name')
+/*::`;*/class MyData extends Data.Base {
   constructor(init: MyDataInit) {
     super();
     this.__stringField = init.stringField;
@@ -52,5 +57,4 @@ type MyDataInit = { stringField: string;
   numberField?: number;
   [key: string]: void;
 };
-Data('name')(MyData);
 export default MyData;
