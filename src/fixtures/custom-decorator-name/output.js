@@ -9,7 +9,7 @@ import { Map } from 'immutable';
   constructor(init: MyRecordInit | Map<string, any>) {
     super();
 
-    if (init instanceof Map) {
+    if (Map.isMap(init)) {
       this.data = init;
     } else {
       this.data = Map({});

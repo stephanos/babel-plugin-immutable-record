@@ -219,9 +219,9 @@ function createConstructor(t, inputTypeName, properties) {
     t.blockStatement([
       t.expressionStatement(t.callExpression(t.super(), [])),
       t.ifStatement(
-        t.binaryExpression(
-          'instanceof', t.identifier(INIT_PARAMETER_NAME), t.identifier('Map')
-        ),
+        t.callExpression(
+          t.memberExpression(t.identifier('Map'), t.identifier('isMap')),
+          [t.identifier(INIT_PARAMETER_NAME)]),
         t.blockStatement([
           t.expressionStatement(
             t.assignmentExpression('=',
