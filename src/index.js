@@ -1,6 +1,6 @@
 /* eslint no-param-reassign:0 no-restricted-syntax:0 */
 
-const DECORATOR = 'Record';
+const DECORATOR_DEFAULT_NAME = 'Record';
 
 const INIT_PARAMETER_NAME = 'init';
 const INIT_PARAMETER_TYPE_SUFFIX = 'Init';
@@ -14,11 +14,11 @@ const UPDATE_PARAMETER_NAME = 'update';
 const UPDATE_PARAMETER_TYPE_SUFFIX = 'Update';
 
 
-function findDecorator(classPath) {
+function findDecorator(classPath, name) {
   let ret;
   classPath.traverse({
     Decorator(decoratorPath) {
-      if (decoratorPath.node.expression.callee.name === DECORATOR) {
+      if (decoratorPath.node.expression.callee.name === name) {
         ret = decoratorPath;
       }
     },
@@ -252,8 +252,10 @@ function createGetters(t, properties) {
   });
 }
 
-function makeImmutable(t, classPath) {
-  const decoratorPath = findDecorator(classPath);
+function makeImmutable(t, classPath, opts) {
+  const decoratorName = opts.decoratorName || DECORATOR_DEFAULT_NAME;
+
+  const decoratorPath = findDecorator(classPath, decoratorName);
   if (decoratorPath === undefined) {
     return;
   }
@@ -264,7 +266,7 @@ function makeImmutable(t, classPath) {
   const className = classPath.node.id.name;
 
   const superClassNode = t.memberExpression(
-    t.identifier(DECORATOR), t.identifier(SUPER_CLASS_NAME));
+    t.identifier(decoratorName), t.identifier(SUPER_CLASS_NAME));
   setSuperClass(classPath, superClassNode);
 
   const properties = classBody.filter((member) => member.type === 'ClassProperty');
@@ -314,8 +316,8 @@ function makeImmutable(t, classPath) {
 export default function ({ types: t }) {
   return {
     visitor: {
-      ClassDeclaration(path) {
-        makeImmutable(t, path);
+      ClassDeclaration(path, state) {
+        makeImmutable(t, path, state.opts);
       },
     },
   };

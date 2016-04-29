@@ -11,13 +11,18 @@ const REQUIRED_PLUGINS = [
   'babel-plugin-syntax-class-properties',
 ];
 
-function testFixture(dir) {
+function transpile(input, pluginOpts = {}) {
+  const plugins = REQUIRED_PLUGINS.slice();
+  plugins.push([plugin, pluginOpts]);
+  const options = { plugins };
+  return transform(input, options).code;
+}
+
+function testFixture(dir, pluginOpts = {}) {
   const fixtureDir = path.join(__dirname, 'fixtures', dir);
-  const output = transform(fs.readFileSync(path.join(fixtureDir, 'input.js'), 'utf8'), {
-    plugins: REQUIRED_PLUGINS.concat([plugin]),
-  }).code;
-  const expectedOutput = fs.readFileSync(path.join(fixtureDir, 'output.js'), 'utf8');
-  assert.equal(output.trim(), expectedOutput.trim());
+  const actual = transpile(fs.readFileSync(path.join(fixtureDir, 'input.js'), 'utf8'), pluginOpts);
+  const expected = fs.readFileSync(path.join(fixtureDir, 'output.js'), 'utf8');
+  assert.equal(actual.trim(), expected.trim());
 }
 
 
@@ -25,6 +30,10 @@ describe('applying record transformer to', () => {
   describe('a record', () => {
     it('should make it immutable', () => {
       testFixture('simple-record');
+    });
+
+    it('with custom decorator name', () => {
+      testFixture('custom-decorator-name', { decoratorName: 'Data' });
     });
 
     describe('with a constructor', () => {
