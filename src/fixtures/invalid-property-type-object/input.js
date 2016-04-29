@@ -1,7 +1,7 @@
 @Record()
 class MyRecord {
 
-  arrayField: {a: string};
+  objectField: {a: string};
 }
 
 export default MyRecord;

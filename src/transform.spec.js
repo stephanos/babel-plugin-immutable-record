@@ -90,6 +90,13 @@ describe('applying record transformer to', () => {
       });
     });
 
+    describe('with an invalid property type \'Object\'', () => {
+      it('should fail', () => {
+        assert.throws(() => testFixture('invalid-property-type-object'),
+          (err) => err.message.indexOf('invalid property \'objectField\': type \'Object\' is not allowed') > 0);
+      });
+    });
+
     describe('with an invalid property type \'Function\'', () => {
       it('should fail', () => {
         assert.throws(() => testFixture('invalid-property-type-func'),
