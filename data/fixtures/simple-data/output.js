@@ -1,12 +1,12 @@
 /* @flow */
 
-import Data from '../decorator';
+import Record from '../decorator';
 
 import { Map } from 'immutable';
 
-/*::`*/@Data('name')
-/*::`;*/class MyData extends Data.Base {
-  constructor(init: MyDataInit) {
+/*::`*/@Record('name')
+/*::`;*/class MyRecord extends Record.Base {
+  constructor(init: MyRecordInit) {
     super();
     this.__stringField = init.stringField;
     this.__booleanField = init.booleanField;
@@ -29,8 +29,8 @@ import { Map } from 'immutable';
     return this.__numberField;
   }
 
-  update(update: MyDataUpdate): MyData {
-    return new MyData({
+  update(update: MyRecordUpdate): MyRecord {
+    return new MyRecord({
       stringField: update.stringField || this.__stringField,
       booleanField: update.booleanField || this.__booleanField,
       numberField: update.numberField || this.__numberField
@@ -47,14 +47,14 @@ import { Map } from 'immutable';
 
 }
 
-type MyDataUpdate = { stringField?: string;
+type MyRecordUpdate = { stringField?: string;
   booleanField?: bool;
   numberField?: number;
   [key: string]: void;
 };
-type MyDataInit = { stringField: string;
+type MyRecordInit = { stringField: string;
   booleanField: bool;
   numberField?: number;
   [key: string]: void;
 };
-export default MyData;
+export default MyRecord;

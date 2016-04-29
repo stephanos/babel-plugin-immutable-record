@@ -1,13 +1,13 @@
 /* @flow */
 
-import Data from '../decorator';
+import Record from '../decorator';
 
-@Data('name')
-class MyData {
+@Record('name')
+class MyRecord {
 
   stringField: string;
   booleanField: boolean;
   numberField: number = 42;
 }
 
-export default MyData;
+export default MyRecord;

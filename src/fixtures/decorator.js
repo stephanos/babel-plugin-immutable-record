@@ -1,9 +1,9 @@
-function Data() {
+function Record() {
   return () => {};
 }
 
 class Base {}
-Data.Base = Base;
+Record.Base = Base;
 
 
-export default Data;
+export default Record;

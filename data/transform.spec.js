@@ -21,10 +21,10 @@ function testFixture(dir) {
 }
 
 
-describe('applying record transformer to', () => {
-  describe('a record', () => {
+describe('applying data transformer to', () => {
+  describe('a data component', () => {
     it('should make it immutable', () => {
-      testFixture('simple-record');
+      testFixture('simple-data');
     });
 
     describe('with a constructor', () => {
