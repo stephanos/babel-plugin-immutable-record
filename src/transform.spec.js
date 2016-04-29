@@ -104,4 +104,8 @@ describe('applying record transformer to', () => {
       });
     });
   });
+
+  describe('not a record', () => {
+    testFixture('non-record');
+  });
 });
