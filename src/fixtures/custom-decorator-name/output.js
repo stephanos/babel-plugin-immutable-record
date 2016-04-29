@@ -4,24 +4,24 @@ import { Map } from 'immutable';
 
 /*::`*/@Data()
 /*::`;*/class MyRecord extends Data.Base {
-  map: Map<string, any>;
+  data: Map<string, any>;
 
   constructor(init: MyRecordInit | Map<string, any>) {
     super();
 
     if (init instanceof Map) {
-      this.map = init;
+      this.data = init;
     } else {
-      this.map = Map({});
+      this.data = Map({});
     }
   }
 
   update(update: MyRecordUpdate): MyRecord {
-    return new MyRecord(this.map.merge(update));
+    return new MyRecord(this.data.merge(update));
   }
 
   toMap(): Map<string, any> {
-    return this.map;
+    return this.data;
   }
 
 }

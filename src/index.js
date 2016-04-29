@@ -5,7 +5,7 @@ const DECORATOR_DEFAULT_NAME = 'Record';
 const INIT_PARAMETER_NAME = 'init';
 const INIT_PARAMETER_TYPE_SUFFIX = 'Init';
 
-const INTERNAL_MAP_NAME = 'map';
+const INTERNAL_DATA_NAME = 'data';
 const TO_MAP_METHOD_NAME = 'toMap';
 
 const SUPER_CLASS_NAME = 'Base';
@@ -74,7 +74,7 @@ function createToMapMethod(t) {
   const result = t.classMethod('method', t.identifier(TO_MAP_METHOD_NAME), [],
     t.blockStatement([
       t.returnStatement(
-        t.memberExpression(t.thisExpression(), t.identifier(INTERNAL_MAP_NAME))
+        t.memberExpression(t.thisExpression(), t.identifier(INTERNAL_DATA_NAME))
         // t.callExpression(
         //   t.identifier('Map'), [
         //     t.objectExpression(properties.map((prop) => {
@@ -188,7 +188,7 @@ function createUpdateMethod(t, inputTypeName, outputTypeName) {
           t.identifier(outputTypeName), [
             t.callExpression(
               t.memberExpression(
-                t.memberExpression(t.thisExpression(), t.identifier(INTERNAL_MAP_NAME)),
+                t.memberExpression(t.thisExpression(), t.identifier(INTERNAL_DATA_NAME)),
                 t.identifier('merge')
               ), [t.identifier(UPDATE_PARAMETER_NAME)]
             ),
@@ -227,7 +227,7 @@ function createConstructor(t, inputTypeName, properties) {
         t.blockStatement([
           t.expressionStatement(
             t.assignmentExpression('=',
-              t.memberExpression(t.thisExpression(), t.identifier(INTERNAL_MAP_NAME)),
+              t.memberExpression(t.thisExpression(), t.identifier(INTERNAL_DATA_NAME)),
               t.identifier(INIT_PARAMETER_NAME)
             )
           ),
@@ -235,7 +235,7 @@ function createConstructor(t, inputTypeName, properties) {
         t.blockStatement([
           t.expressionStatement(
             t.assignmentExpression('=',
-              t.memberExpression(t.thisExpression(), t.identifier(INTERNAL_MAP_NAME)),
+              t.memberExpression(t.thisExpression(), t.identifier(INTERNAL_DATA_NAME)),
               t.callExpression(t.identifier('Map'), [
                 t.objectExpression(properties.map((prop) => {
                   const initProp = t.memberExpression(
@@ -261,7 +261,7 @@ function createGetters(t, properties) {
         t.returnStatement(
           t.callExpression(
             t.memberExpression(
-              t.memberExpression(t.thisExpression(), t.identifier(INTERNAL_MAP_NAME)),
+              t.memberExpression(t.thisExpression(), t.identifier(INTERNAL_DATA_NAME)),
               t.identifier('get')
             ),
             [t.stringLiteral(prop.key.name)]
@@ -291,7 +291,7 @@ function makeImmutable(t, classPath, opts) {
   setSuperClass(classPath, superClassNode);
 
   const properties = classBody.filter((member) => member.type === 'ClassProperty');
-  checkThereIsNoMemberNamed(classPath, INTERNAL_MAP_NAME);
+  checkThereIsNoMemberNamed(classPath, INTERNAL_DATA_NAME);
   checkPropertyNames(classPath, properties);
   checkPropertyTypes(t, classPath, properties);
   createGetters(t, properties).forEach((getter) => classBody.push(getter));
@@ -321,7 +321,7 @@ function makeImmutable(t, classPath, opts) {
 
   classPath.node.body.body = classBody.filter((member) => member.type !== 'ClassProperty');
   classPath.node.body.body.unshift(t.classProperty(
-    t.identifier(INTERNAL_MAP_NAME), null, t.typeAnnotation(internalMapType(t))
+    t.identifier(INTERNAL_DATA_NAME), null, t.typeAnnotation(internalMapType(t))
   ));
 
   // TODO: check an import for the decorator is there

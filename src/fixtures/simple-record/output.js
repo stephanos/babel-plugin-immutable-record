@@ -6,15 +6,15 @@ import { Map } from 'immutable';
 
 /*::`*/@Record('name')
 /*::`;*/class MyRecord extends Record.Base {
-  map: Map<string, any>;
+  data: Map<string, any>;
 
   constructor(init: MyRecordInit | Map<string, any>) {
     super();
 
     if (init instanceof Map) {
-      this.map = init;
+      this.data = init;
     } else {
-      this.map = Map({
+      this.data = Map({
         stringField: init.stringField,
         booleanField: init.booleanField,
         numberField: init.numberField || 42
@@ -23,23 +23,23 @@ import { Map } from 'immutable';
   }
 
   get stringField(): string {
-    return this.map.get('stringField');
+    return this.data.get('stringField');
   }
 
   get booleanField(): bool {
-    return this.map.get('booleanField');
+    return this.data.get('booleanField');
   }
 
   get numberField(): number {
-    return this.map.get('numberField');
+    return this.data.get('numberField');
   }
 
   update(update: MyRecordUpdate): MyRecord {
-    return new MyRecord(this.map.merge(update));
+    return new MyRecord(this.data.merge(update));
   }
 
   toMap(): Map<string, any> {
-    return this.map;
+    return this.data;
   }
 
 }
