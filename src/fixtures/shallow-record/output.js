@@ -2,7 +2,7 @@
 
 import Record from '../decorator';
 
-import { Map } from 'immutable';
+import { List, Map } from 'immutable';
 
 /*::`*/@Record('name')
 /*::`;*/class MyRecord extends Record.Base {
@@ -15,11 +15,16 @@ import { Map } from 'immutable';
       this.data = init;
     } else {
       this.data = Map({
+        arrayField: List(init.arrayField || []),
         stringField: init.stringField,
         booleanField: init.booleanField,
         numberField: init.numberField || 42
       });
     }
+  }
+
+  get arrayField(): List<string> {
+    return this.data.get('arrayField');
   }
 
   get stringField(): string {
@@ -44,12 +49,14 @@ import { Map } from 'immutable';
 
 }
 
-type MyRecordUpdate = { stringField?: string;
+type MyRecordUpdate = { arrayField?: string[];
+  stringField?: string;
   booleanField?: bool;
   numberField?: number;
   [key: string]: void;
 };
-type MyRecordInit = { stringField: string;
+type MyRecordInit = { arrayField?: string[];
+  stringField: string;
   booleanField: bool;
   numberField?: number;
   [key: string]: void;

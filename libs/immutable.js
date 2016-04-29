@@ -102,6 +102,7 @@ declare module 'immutable' {
     * Create a new immutable List containing the values of the provided
     * iterable-like.
     */
+    static <T>(iter?: T[]): List<T>;
     static <T>(iter?: IndexedIterable<T>): List<T>;
     static <T>(iter?: SetIterable<T>): List<T>;
     static <T>(iterator?: Iterator<T>): List<T>;

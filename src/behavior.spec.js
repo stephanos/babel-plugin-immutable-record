@@ -1,4 +1,5 @@
 import assert from 'assert';
+import { List } from 'immutable';
 
 import ShallowRecord from './fixtures/shallow-record/output';
 
@@ -10,6 +11,7 @@ describe('an immutable record', () => {
       stringField: 'string',
     });
 
+    assert.equal(record.arrayField, List());
     assert.equal(record.booleanField, true);
     assert.equal(record.numberField, 42);
     assert.equal(record.stringField, 'string');
@@ -23,6 +25,9 @@ describe('an immutable record', () => {
 
     assert.throws(() => { record.booleanField = false; },
       (err) => err.message.indexOf('Cannot set property booleanField') >= 0);
+
+    record.arrayField.push('test');
+    assert.equal(record.arrayField, List());
   });
 
   it('should not change after update', () => {
@@ -53,6 +58,7 @@ describe('an immutable record', () => {
     });
 
     const map = record.toMap();
+    assert.equal(map.get('arrayField'), List());
     assert.equal(map.get('booleanField'), true);
     assert.equal(map.get('numberField'), 42);
     assert.equal(map.get('stringField'), 'string');

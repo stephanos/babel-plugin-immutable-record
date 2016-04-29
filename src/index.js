@@ -64,10 +64,12 @@ function setSuperClass(classPath, superClassNode) {
 }
 
 
-function createImportForImmutableMap(t) {
-  return t.importDeclaration([
-    t.importSpecifier(t.identifier('Map'), t.identifier('Map')),
-  ], t.stringLiteral('immutable'));
+function createImportForImmutableMap(t, includeList) {
+  const importsFromImmutable = [t.importSpecifier(t.identifier('Map'), t.identifier('Map'))];
+  if (includeList) {
+    importsFromImmutable.unshift(t.importSpecifier(t.identifier('List'), t.identifier('List')));
+  }
+  return t.importDeclaration(importsFromImmutable, t.stringLiteral('immutable'));
 }
 
 function createToMapMethod(t) {
@@ -169,10 +171,6 @@ function checkPropertyTypes(t, classPath, properties) {
       throw classPath.buildCodeFrameError(
         `invalid property '${prop.key.name}': type 'Object' is not allowed`);
     }
-    if (t.isArrayTypeAnnotation(innerType)) {
-      throw classPath.buildCodeFrameError(
-        `invalid property '${prop.key.name}': type 'Array' is not allowed`);
-    }
   });
 }
 
@@ -238,12 +236,16 @@ function createConstructor(t, inputTypeName, properties) {
               t.memberExpression(t.thisExpression(), t.identifier(INTERNAL_DATA_NAME)),
               t.callExpression(t.identifier('Map'), [
                 t.objectExpression(properties.map((prop) => {
-                  const initProp = t.memberExpression(
-                    t.identifier(INIT_PARAMETER_NAME), t.identifier(prop.key.name));
-                  return t.objectProperty(
-                    t.identifier(prop.key.name),
-                    prop.value ? t.logicalExpression('||', initProp, prop.value) : initProp
+                  let initValue = t.memberExpression(
+                    t.identifier(INIT_PARAMETER_NAME), t.identifier(prop.key.name)
                   );
+                  if (prop.value) {
+                    initValue = t.logicalExpression('||', initValue, prop.value);
+                  }
+                  if (t.isArrayTypeAnnotation(getInnerType(prop.typeAnnotation))) {
+                    initValue = t.callExpression(t.identifier('List'), [initValue]);
+                  }
+                  return t.objectProperty(t.identifier(prop.key.name), initValue);
                 })),
               ])
             )
@@ -268,7 +270,18 @@ function createGetters(t, properties) {
           )
         ),
       ]));
-    getter.returnType = prop.typeAnnotation;
+
+    let returnType = prop.typeAnnotation;
+    if (t.isArrayTypeAnnotation(getInnerType(returnType))) {
+      returnType = t.typeAnnotation(
+        t.genericTypeAnnotation(
+          t.identifier('List'),
+          t.typeParameterInstantiation([returnType.typeAnnotation.elementType])
+        )
+      );
+    }
+    getter.returnType = returnType;
+
     return getter;
   });
 }
@@ -319,19 +332,20 @@ function makeImmutable(t, classPath, opts) {
     createToMapMethod(t, properties, superClassNode)
   );
 
-  classPath.node.body.body = classBody.filter((member) => member.type !== 'ClassProperty');
-  classPath.node.body.body.unshift(t.classProperty(
-    t.identifier(INTERNAL_DATA_NAME), null, t.typeAnnotation(internalMapType(t))
-  ));
-
   // TODO: check an import for the decorator is there
   const fileBody = classPath.parentPath.node.body;
   for (const i in fileBody) {
     if (t.isImportDeclaration(fileBody[i])) {
-      fileBody.splice(i + 1, 0, createImportForImmutableMap(t));
+      const hasArrayType = classBody.filter((member) => getInnerType(member.typeAnnotation)).length > 0;
+      fileBody.splice(i + 1, 0, createImportForImmutableMap(t, hasArrayType));
       break;
     }
   }
+
+  classPath.node.body.body = classBody.filter((member) => member.type !== 'ClassProperty');
+  classPath.node.body.body.unshift(t.classProperty(
+    t.identifier(INTERNAL_DATA_NAME), null, t.typeAnnotation(internalMapType(t))
+  ));
 }
 
 
