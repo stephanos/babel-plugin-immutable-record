@@ -1,11 +1,11 @@
 import assert from 'assert';
 
-import SimpleRecord from './fixtures/simple-record/output';
+import ShallowRecord from './fixtures/shallow-record/output';
 
 
 describe('an immutable record', () => {
   it('should have getters', () => {
-    const record = new SimpleRecord({
+    const record = new ShallowRecord({
       booleanField: true,
       stringField: 'string',
     });
@@ -16,7 +16,7 @@ describe('an immutable record', () => {
   });
 
   it('should not be mutable', () => {
-    const record = new SimpleRecord({
+    const record = new ShallowRecord({
       booleanField: true,
       stringField: 'string',
     });
@@ -26,7 +26,7 @@ describe('an immutable record', () => {
   });
 
   it('should not change after update', () => {
-    const record = new SimpleRecord({
+    const record = new ShallowRecord({
       booleanField: true,
       stringField: 'string',
     });
@@ -36,7 +36,7 @@ describe('an immutable record', () => {
   });
 
   it('should return new record after update', () => {
-    const record = new SimpleRecord({
+    const record = new ShallowRecord({
       booleanField: true,
       stringField: 'string',
     });
@@ -47,7 +47,7 @@ describe('an immutable record', () => {
   });
 
   it('should export data to Map', () => {
-    const record = new SimpleRecord({
+    const record = new ShallowRecord({
       booleanField: true,
       stringField: 'string',
     });

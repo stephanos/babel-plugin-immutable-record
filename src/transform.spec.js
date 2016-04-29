@@ -28,8 +28,10 @@ function testFixture(dir, pluginOpts = {}) {
 
 describe('applying record transformer to', () => {
   describe('a record', () => {
-    it('should make it immutable', () => {
-      testFixture('simple-record');
+    describe('that only consists of JavaScript primitives', () => {
+      it('should make it immutable', () => {
+        testFixture('shallow-record');
+      });
     });
 
     it('with custom decorator name', () => {

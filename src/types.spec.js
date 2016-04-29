@@ -1,18 +1,18 @@
 /* @flow */
 /* eslint no-unused-vars:0 */
 
-import SimpleRecord from './fixtures/simple-record/output';
+import ShallowRecord from './fixtures/shallow-record/output';
 
-export function createWithAllFields(): SimpleRecord {
-  return new SimpleRecord({
+export function createWithAllFields(): ShallowRecord {
+  return new ShallowRecord({
     booleanField: true,
     numberField: 101,
     stringField: 'string',
   });
 }
 
-export function createWithFieldDefault(): SimpleRecord {
-  return new SimpleRecord({
+export function createWithFieldDefault(): ShallowRecord {
+  return new ShallowRecord({
     booleanField: true,
     stringField: 'string',
   });
