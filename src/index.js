@@ -332,14 +332,19 @@ function makeImmutable(t, classPath, opts) {
     createToMapMethod(t, properties, superClassNode)
   );
 
-  // TODO: check an import for the decorator is there
+  let hasDecoratorImport = false;
   const fileBody = classPath.parentPath.node.body;
   for (const i in fileBody) {
     if (t.isImportDeclaration(fileBody[i])) {
       const hasArrayType = classBody.filter((member) => getInnerType(member.typeAnnotation)).length > 0;
       fileBody.splice(i + 1, 0, createImportForImmutableMap(t, hasArrayType));
+      hasDecoratorImport = true;
       break;
     }
+  }
+  if (!hasDecoratorImport) {
+    throw decoratorPath.buildCodeFrameError(
+      `file is missing the import for the '${decoratorName}' decorator`);
   }
 
   classPath.node.body.body = classBody.filter((member) => member.type !== 'ClassProperty');

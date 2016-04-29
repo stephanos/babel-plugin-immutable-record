@@ -1,3 +1,5 @@
+import Record from '../decorator';
+
 @Record()
 class MyRecord {
 

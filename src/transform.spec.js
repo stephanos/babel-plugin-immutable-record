@@ -114,6 +114,13 @@ describe('applying record transformer to', () => {
           (err) => err.message.indexOf('invalid property \'untypedField\': missing type') > 0);
       });
     });
+
+    describe('with a missing decorator import', () => {
+      it('should fail', () => {
+        assert.throws(() => testFixture('missing-decorator-import'),
+          (err) => err.message.indexOf('file is missing the import for the \'Record\' decorator') > 0);
+      });
+    });
   });
 
   describe('not a record', () => {
