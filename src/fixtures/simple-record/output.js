@@ -6,43 +6,40 @@ import { Map } from 'immutable';
 
 /*::`*/@Record('name')
 /*::`;*/class MyRecord extends Record.Base {
-  constructor(init: MyRecordInit) {
+  map: Map<string, any>;
+
+  constructor(init: MyRecordInit | Map<string, any>) {
     super();
-    this.__stringField = init.stringField;
-    this.__booleanField = init.booleanField;
-    this.__numberField = init.numberField || 42;
+
+    if (init instanceof Map) {
+      this.map = init;
+    } else {
+      this.map = Map({
+        stringField: init.stringField,
+        booleanField: init.booleanField,
+        numberField: init.numberField || 42
+      });
+    }
   }
 
-  __stringField: string;
-  __booleanField: bool;
-  __numberField: number;
-
   get stringField(): string {
-    return this.__stringField;
+    return this.map.get('stringField');
   }
 
   get booleanField(): bool {
-    return this.__booleanField;
+    return this.map.get('booleanField');
   }
 
   get numberField(): number {
-    return this.__numberField;
+    return this.map.get('numberField');
   }
 
   update(update: MyRecordUpdate): MyRecord {
-    return new MyRecord({
-      stringField: update.stringField || this.__stringField,
-      booleanField: update.booleanField || this.__booleanField,
-      numberField: update.numberField || this.__numberField
-    });
+    return new MyRecord(this.map.merge(update));
   }
 
   toMap(): Map<string, any> {
-    return Map({
-      stringField: this.__stringField,
-      booleanField: this.__booleanField,
-      numberField: this.__numberField
-    });
+    return this.map;
   }
 
 }
