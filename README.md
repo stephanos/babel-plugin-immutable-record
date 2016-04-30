@@ -10,9 +10,9 @@ and generates a record with the following properties:
   - `toMap()` to export an untyped Map
 
 It's based Facebook's
-  [https://facebook.github.io/immutable-js/](immutable-js)
+  [immutable-js](https://facebook.github.io/immutable-js/)
   and
-  [http://flowtype.org/](Flow).
+  [Flow](http://flowtype.org/).
 
 
 ## Usage
