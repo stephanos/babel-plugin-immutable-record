@@ -11,7 +11,7 @@ import { List, Map } from 'immutable';
   constructor(init: MyRecordInit | Map<string, any>) {
     super();
 
-    if (Map.isMap(init)) {
+    if (init instanceof Map) {
       this.data = init;
     } else {
       this.data = Map({
