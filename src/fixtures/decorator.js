@@ -1,4 +1,6 @@
-function Record() {
+/* @flow */
+
+function Record(): Function {
   return () => {};
 }
 

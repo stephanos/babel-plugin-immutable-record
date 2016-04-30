@@ -1,6 +1,18 @@
 import Data from '../decorator';
 
-import { Map } from 'immutable';
+import { Iterable, Map } from 'immutable';
+
+function toMap(v) {
+  if (v instanceof Iterable) {
+    return v.map(toMap);
+  }
+
+  if (v instanceof Data.Base) {
+    return v.toMap();
+  }
+
+  return v;
+}
 
 /*::`*/@Data()
 /*::`;*/class MyRecord extends Data.Base {
@@ -21,7 +33,7 @@ import { Map } from 'immutable';
   }
 
   toMap(): Map<string, any> {
-    return this.data;
+    return toMap(this.data);
   }
 
 }

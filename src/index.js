@@ -45,16 +45,6 @@ function getInnerType(typeAnnotation) {
   return innerType;
 }
 
-// function isPrimitiveType(t, typeAnnotation) {
-//   const innerType = getInnerType(typeAnnotation);
-//   return t.isBooleanTypeAnnotation(innerType)
-//     || t.isBooleanLiteralTypeAnnotation(innerType)
-//     || t.isNumberTypeAnnotation(innerType)
-//     || t.isNumericLiteralTypeAnnotation(innerType)
-//     || t.isStringTypeAnnotation(innerType)
-//     || t.isStringLiteralTypeAnnotation(innerType);
-// }
-
 function setSuperClass(classPath, superClassNode) {
   const superClass = classPath.node.superClass;
   if (superClass) {
@@ -63,36 +53,81 @@ function setSuperClass(classPath, superClassNode) {
   classPath.node.superClass = superClassNode;
 }
 
-
 function createImportForImmutableMap(t, includeList) {
-  const importsFromImmutable = [t.importSpecifier(t.identifier('Map'), t.identifier('Map'))];
+  const importsFromImmutable = [
+    t.importSpecifier(t.identifier('Iterable'), t.identifier('Iterable')),
+    t.importSpecifier(t.identifier('Map'), t.identifier('Map')),
+  ];
   if (includeList) {
     importsFromImmutable.unshift(t.importSpecifier(t.identifier('List'), t.identifier('List')));
   }
   return t.importDeclaration(importsFromImmutable, t.stringLiteral('immutable'));
 }
 
+function createToMapFunction(t, superClassNode) {
+  const parameterName = 'v';
+  return t.functionDeclaration(
+    t.identifier(TO_MAP_METHOD_NAME),
+    [t.identifier(parameterName)],
+    t.blockStatement([
+      t.ifStatement(
+        t.binaryExpression(
+          'instanceof', t.identifier(parameterName), t.identifier('Iterable')
+        ),
+        t.blockStatement([
+          t.returnStatement(
+            t.callExpression(
+              t.memberExpression(t.identifier(parameterName), t.identifier('map')),
+              [t.identifier(TO_MAP_METHOD_NAME)]
+            )
+          ),
+        ]),
+        null
+      ),
+      t.ifStatement(
+        t.binaryExpression(
+          'instanceof', t.identifier(parameterName), superClassNode
+        ),
+        t.blockStatement([
+          t.returnStatement(
+            t.callExpression(
+              t.memberExpression(t.identifier(parameterName), t.identifier(TO_MAP_METHOD_NAME)),
+              []
+            )
+          ),
+        ]),
+        null
+      ),
+      t.returnStatement(t.identifier(parameterName)),
+    ])
+  );
+}
+
+// t.callExpression(
+//   t.identifier('Map'), [
+//     t.objectExpression(properties.map((prop) => {
+//       const propRef = t.memberExpression(t.thisExpression(), t.identifier(`__${prop.key.name}`));
+//       const mapVal =
+//         isPrimitiveType(t, prop.typeAnnotation)
+//           ? propRef
+//           : t.conditionalExpression(
+//             t.binaryExpression('instanceof', propRef, superClassNode),
+//             t.callExpression(t.memberExpression(propRef, t.identifier(TO_MAP_METHOD_NAME)), []),
+//             propRef
+//           );
+//       return t.objectProperty(t.identifier(prop.key.name), mapVal);
+//     })),
+//   ]
+// )
+
 function createToMapMethod(t) {
   const result = t.classMethod('method', t.identifier(TO_MAP_METHOD_NAME), [],
     t.blockStatement([
       t.returnStatement(
-        t.memberExpression(t.thisExpression(), t.identifier(INTERNAL_DATA_NAME))
-        // t.callExpression(
-        //   t.identifier('Map'), [
-        //     t.objectExpression(properties.map((prop) => {
-        //       const propRef = t.memberExpression(t.thisExpression(), t.identifier(`__${prop.key.name}`));
-        //       const mapVal =
-        //         isPrimitiveType(t, prop.typeAnnotation)
-        //           ? propRef
-        //           : t.conditionalExpression(
-        //             t.binaryExpression('instanceof', propRef, superClassNode),
-        //             t.callExpression(t.memberExpression(propRef, t.identifier(TO_MAP_METHOD_NAME)), []),
-        //             propRef
-        //           );
-        //       return t.objectProperty(t.identifier(prop.key.name), mapVal);
-        //     })),
-        //   ]
-        // )
+        t.callExpression(
+          t.identifier(TO_MAP_METHOD_NAME),
+          [t.memberExpression(t.thisExpression(), t.identifier(INTERNAL_DATA_NAME))]
+        )
       ),
     ])
   );
@@ -326,8 +361,11 @@ function makeImmutable(t, classPath, opts) {
   );
 
   checkThereIsNoMemberNamed(classPath, TO_MAP_METHOD_NAME);
+  classPath.insertBefore(
+    createToMapFunction(t, superClassNode)
+  );
   classBody.push(
-    createToMapMethod(t, properties, superClassNode)
+    createToMapMethod(t)
   );
 
   let hasDecoratorImport = false;

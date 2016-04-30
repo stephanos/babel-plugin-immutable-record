@@ -34,6 +34,12 @@ describe('applying record transformer to', () => {
       });
     });
 
+    describe('that embeds another record', () => {
+      it('should make it immutable', () => {
+        testFixture('nested-record');
+      });
+    });
+
     it('with custom decorator name', () => {
       testFixture('custom-decorator-name', { decoratorName: 'Data' });
     });

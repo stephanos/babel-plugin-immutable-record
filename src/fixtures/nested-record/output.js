@@ -1,8 +1,8 @@
 /* @flow */
 
 import Record from '../decorator';
-
 import { List, Iterable, Map } from 'immutable';
+import ShallowRecord from '../shallow-record/output';
 
 function toMap(v) {
   if (v instanceof Iterable) {
@@ -16,7 +16,7 @@ function toMap(v) {
   return v;
 }
 
-/*::`*/@Record('name')
+/*::`*/@Record()
 /*::`;*/class MyRecord extends Record.Base {
   data: Map<string, any>;
 
@@ -27,28 +27,18 @@ function toMap(v) {
       this.data = init;
     } else {
       this.data = Map({
-        arrayField: List(init.arrayField || []),
-        stringField: init.stringField,
-        booleanField: init.booleanField,
-        numberField: init.numberField || 42
+        recordField: init.recordField,
+        recordsField: List(init.recordsField)
       });
     }
   }
 
-  get arrayField(): List<string> {
-    return this.data.get('arrayField');
+  get recordField(): ShallowRecord {
+    return this.data.get('recordField');
   }
 
-  get stringField(): string {
-    return this.data.get('stringField');
-  }
-
-  get booleanField(): bool {
-    return this.data.get('booleanField');
-  }
-
-  get numberField(): number {
-    return this.data.get('numberField');
+  get recordsField(): List<ShallowRecord> {
+    return this.data.get('recordsField');
   }
 
   update(update: MyRecordUpdate): MyRecord {
@@ -61,16 +51,12 @@ function toMap(v) {
 
 }
 
-type MyRecordUpdate = { arrayField?: string[];
-  stringField?: string;
-  booleanField?: bool;
-  numberField?: number;
+type MyRecordUpdate = { recordField?: ShallowRecord;
+  recordsField?: ShallowRecord[];
   [key: string]: void;
 };
-type MyRecordInit = { arrayField?: string[];
-  stringField: string;
-  booleanField: bool;
-  numberField?: number;
+type MyRecordInit = { recordField: ShallowRecord;
+  recordsField: ShallowRecord[];
   [key: string]: void;
 };
 export default MyRecord;

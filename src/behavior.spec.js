@@ -1,40 +1,67 @@
 import assert from 'assert';
-import { List } from 'immutable';
+import { List, Map } from 'immutable';
 
 import ShallowRecord from './fixtures/shallow-record/output';
+import NestedRecord from './fixtures/nested-record/output';
 
 
 describe('an immutable record', () => {
-  it('should have getters', () => {
-    const record = new ShallowRecord({
-      booleanField: true,
-      stringField: 'string',
+  describe('should have getters', () => {
+    it('for primitive fields', () => {
+      const record = new ShallowRecord({
+        booleanField: true,
+        stringField: 'string',
+      });
+
+      assert.equal(record.booleanField, true);
+      assert.equal(record.numberField, 42);
+      assert.equal(record.stringField, 'string');
     });
 
-    assert.equal(record.arrayField, List());
-    assert.equal(record.booleanField, true);
-    assert.equal(record.numberField, 42);
-    assert.equal(record.stringField, 'string');
+    it('for an array field', () => {
+      const record = new ShallowRecord({
+        arrayField: ['John', 'Ringo'],
+        booleanField: true,
+        stringField: 'string',
+      });
+
+      assert.deepEqual(record.arrayField, List(['John', 'Ringo']));
+    });
+
+    it('for a record field', () => {
+      const embedded = new ShallowRecord({
+        booleanField: false, stringField: 'string' });
+      const record = new NestedRecord({
+        recordField: embedded,
+        recordsField: [embedded],
+      });
+
+      assert.deepEqual(record.recordField, embedded);
+      assert.deepEqual(record.recordsField, List([embedded]));
+    });
   });
 
   it('should not be mutable', () => {
-    const record = new ShallowRecord({
-      booleanField: true,
-      stringField: 'string',
+    it('for primitive fields', () => {
+      const record = new ShallowRecord({
+        booleanField: true, stringField: 'string' });
+
+      assert.throws(() => { record.booleanField = false; },
+        (err) => err.message.indexOf('Cannot set property booleanField') >= 0);
     });
 
-    assert.throws(() => { record.booleanField = false; },
-      (err) => err.message.indexOf('Cannot set property booleanField') >= 0);
+    it('for array field', () => {
+      const record = new ShallowRecord({
+        booleanField: true, stringField: 'string' });
 
-    record.arrayField.push('test');
-    assert.equal(record.arrayField, List());
+      record.arrayField.push('test');
+      assert.equal(record.arrayField, List());
+    });
   });
 
   it('should not change after update', () => {
     const record = new ShallowRecord({
-      booleanField: true,
-      stringField: 'string',
-    });
+      booleanField: true, stringField: 'string' });
     record.update({ stringField: 'new-string' });
 
     assert.equal(record.stringField, 'string');
@@ -42,25 +69,56 @@ describe('an immutable record', () => {
 
   it('should return new record after update', () => {
     const record = new ShallowRecord({
-      booleanField: true,
-      stringField: 'string',
-    });
+      booleanField: true, stringField: 'string' });
 
     const newRecord = record.update({ stringField: 'new-string' });
     assert.equal(newRecord.stringField, 'new-string');
     assert.notEqual(record, newRecord);
   });
 
-  it('should export data to Map', () => {
-    const record = new ShallowRecord({
-      booleanField: true,
-      stringField: 'string',
+  describe('should export data to Map', () => {
+    it('for primitive fields', () => {
+      const record = new ShallowRecord({
+        booleanField: true, stringField: 'string' });
+
+      const map = record.toMap();
+      assert.deepEqual(map, Map({
+        arrayField: List(),
+        stringField: 'string',
+        booleanField: true,
+        numberField: 42,
+      }));
     });
 
-    const map = record.toMap();
-    assert.equal(map.get('arrayField'), List());
-    assert.equal(map.get('booleanField'), true);
-    assert.equal(map.get('numberField'), 42);
-    assert.equal(map.get('stringField'), 'string');
+    it('for embedded record fields', () => {
+      const record = new NestedRecord({
+        recordField: new ShallowRecord({ booleanField: false, stringField: '1' }),
+        recordsField: [
+          new ShallowRecord({ booleanField: true, stringField: '2' }),
+          new ShallowRecord({ booleanField: true, stringField: '3' }),
+        ],
+      });
+
+      const map = record.toMap();
+      assert.deepEqual(map.toJS(), Map({
+        recordField: Map({
+          arrayField: List(),
+          stringField: '1',
+          booleanField: false,
+          numberField: 42,
+        }),
+        recordsField: List([Map({
+          arrayField: List(),
+          stringField: '2',
+          booleanField: true,
+          numberField: 42,
+        }), Map({
+          arrayField: List(),
+          stringField: '3',
+          booleanField: true,
+          numberField: 42,
+        })]),
+      }).toJS());
+    });
   });
 });
