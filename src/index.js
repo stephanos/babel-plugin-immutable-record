@@ -37,13 +37,11 @@ function findDecorator(classPath, name) {
   return ret;
 }
 
-function findImport(filePath, name) {
-  let ret;
+function findImports(filePath) {
+  const ret = [];
   filePath.traverse({
-    ImportDeclaration(importPath) {
-      if (importPath.node.source.value === name) {
-        ret = importPath;
-      }
+    ImportDeclaration(path) {
+      ret.push(path);
     },
   });
   return ret;
@@ -369,25 +367,20 @@ function makeImmutable(t, classPath, opts) {
     createToMapMethod(t)
   );
 
-  let hasDecoratorImport = false;
-  const fileBody = classPath.parentPath.node.body;
-  const existingImmutableImportPath = findImport(classPath.parentPath, 'immutable');
-  for (const i in fileBody) {
-    if (t.isImportDeclaration(fileBody[i])) {
-      const hasArrayType = classBody.filter((member) => getInnerType(member.typeAnnotation)).length > 0;
-      const immutableImport = createImportForImmutableMap(t, existingImmutableImportPath, hasArrayType);
-      if (existingImmutableImportPath) {
-        existingImmutableImportPath.replaceWith(immutableImport);
-      } else {
-        fileBody.splice(i + 1, 0, immutableImport);
-      }
-      hasDecoratorImport = true;
-      break;
-    }
-  }
-  if (!hasDecoratorImport) {
+  const imports = findImports(classPath.parentPath);
+  const decoratorImport = imports.find(i => i.node.specifiers.find(s => s.local.name === decoratorName));
+  if (!decoratorImport) {
     throw decoratorPath.buildCodeFrameError(
       `file is missing the import for the '${decoratorName}' decorator`);
+  }
+
+  const existingImmutableImportPath = imports.find(i => i.node.source.value === 'immutable');
+  const hasArrayType = classBody.filter((member) => getInnerType(member.typeAnnotation)).length > 0;
+  const immutableImport = createImportForImmutableMap(t, existingImmutableImportPath, hasArrayType);
+  if (existingImmutableImportPath) {
+    existingImmutableImportPath.replaceWith(immutableImport);
+  } else {
+    decoratorImport.insertAfter(immutableImport);
   }
 
   classPath.node.body.body = classBody.filter((member) => member.type !== 'ClassProperty');
