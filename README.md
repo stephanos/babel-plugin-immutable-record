@@ -1,7 +1,7 @@
 # babel-plugin-immutable-record [![Build Status](https://travis-ci.org/stephanos/babel-plugin-immutable-record.svg)](https://travis-ci.org/stephanos/babel-plugin-immutable-record) [![Coverage Status](https://coveralls.io/repos/stephanos/babel-plugin-immutable-record/badge.svg?branch=master&service=github)](https://coveralls.io/github/stephanos/babel-plugin-immutable-record?branch=master)
 
 
-This plugin is acts like a *preprocessor*: it takes a mutable class
+This plugin is acts as a *preprocessor*: it takes a mutable class
 and generates a record with the following properties:
 
   - immutable
@@ -10,9 +10,9 @@ and generates a record with the following properties:
   - `toMap()` to export an untyped Map
 
 It's based Facebook's
-  (immutable-js)[https://facebook.github.io/immutable-js/]
+  [https://facebook.github.io/immutable-js/](immutable-js)
   and
-  (Flow)[http://flowtype.org/].
+  [http://flowtype.org/](Flow).
 
 
 ## Usage
@@ -48,7 +48,7 @@ class MyBand extends Record.Base {
   get members(): List<string> { /* ... */ }
   get active(): boolean { /* ... */ }
 
-  update(update: MyBandUpdate): MyRecord { /* ... */ }
+  update(update: MyBandUpdate): MyBand { /* ... */ }
   toMap(): Map<string, any> { /* ... */ }
 }
 
@@ -58,9 +58,11 @@ type MyBandUpdate = { name?: string; members?: List<string>; active?: boolean };
 
 The Flow type checker will prevent:
 
-   - forgetting to provide a required field on initalisation
-   - using a wrong type for a field
-   - passing-in data for undefined properties
+   - missing fields on initalisation
+   - wrong type for a field
+   - data for undefined properties
+
+This shows how you could use it:
 
 ```js
 const band = new MyBand({
