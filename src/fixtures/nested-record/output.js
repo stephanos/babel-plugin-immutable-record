@@ -20,12 +20,10 @@ function toMap(v) {
 /*::`;*/class MyRecord extends Record.Base {
   data: Map<string, any>;
 
-  constructor(init: MyRecordInit | Map<string, any>) {
+  constructor(init: MyRecordInit) {
     super();
 
-    if (init instanceof Map) {
-      this.data = init;
-    } else {
+    if (init) {
       this.data = Map({
         recordField: init.recordField,
         recordsField: List(init.recordsField)
@@ -42,7 +40,9 @@ function toMap(v) {
   }
 
   update(update: MyRecordUpdate): MyRecord {
-    return new MyRecord(this.data.merge(update));
+    const updated = Object.create(MyRecord.prototype);
+    updated.data = this.data.merge(update);
+    return updated;
   }
 
   toMap(): Map<string, any> {

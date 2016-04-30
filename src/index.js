@@ -212,21 +212,31 @@ function createUpdateMethod(t, inputTypeName, outputTypeName) {
   const parameter = t.identifier(UPDATE_PARAMETER_NAME);
   parameter.typeAnnotation = t.typeAnnotation(t.genericTypeAnnotation(t.identifier(inputTypeName)));
 
+  const tmpVarName = 'updated';
   const result = t.classMethod('method', t.identifier(UPDATE_METHOD_NAME),
     [parameter],
     t.blockStatement([
-      t.returnStatement(
-        t.newExpression(
-          t.identifier(outputTypeName), [
-            t.callExpression(
-              t.memberExpression(
-                t.memberExpression(t.thisExpression(), t.identifier(INTERNAL_DATA_NAME)),
-                t.identifier('merge')
-              ), [t.identifier(UPDATE_PARAMETER_NAME)]
+      t.variableDeclaration('const',
+        [t.variableDeclarator(t.identifier(tmpVarName),
+          t.callExpression(
+            t.memberExpression(t.identifier('Object'), t.identifier('create')),
+            [t.memberExpression(t.identifier(outputTypeName), t.identifier('prototype'))]
+          )
+        )]
+      ),
+      t.expressionStatement(
+        t.assignmentExpression('=',
+          t.memberExpression(t.identifier(tmpVarName), t.identifier(INTERNAL_DATA_NAME)),
+          t.callExpression(
+            t.memberExpression(
+              t.memberExpression(t.thisExpression(), t.identifier(INTERNAL_DATA_NAME)),
+              t.identifier('merge')
             ),
-          ]
+            [t.identifier(UPDATE_PARAMETER_NAME)]
+          )
         )
       ),
+      t.returnStatement(t.identifier(tmpVarName)),
     ])
   );
   result.returnType = t.typeAnnotation(t.genericTypeAnnotation(t.identifier(outputTypeName)));
@@ -243,25 +253,14 @@ function checkThereIsNoConstructor(classPath) {
 function createConstructor(t, inputTypeName, properties) {
   const param = t.identifier(INIT_PARAMETER_NAME);
   param.typeAnnotation = t.typeAnnotation(
-    t.unionTypeAnnotation([
-      t.genericTypeAnnotation(t.identifier(inputTypeName)),
-      internalMapType(t),
-    ])
+    t.genericTypeAnnotation(t.identifier(inputTypeName))
   );
 
   return t.classMethod('constructor', t.identifier('constructor'), [param],
     t.blockStatement([
       t.expressionStatement(t.callExpression(t.super(), [])),
       t.ifStatement(
-        t.binaryExpression('instanceof', t.identifier(INIT_PARAMETER_NAME), t.identifier('Map')),
-        t.blockStatement([
-          t.expressionStatement(
-            t.assignmentExpression('=',
-              t.memberExpression(t.thisExpression(), t.identifier(INTERNAL_DATA_NAME)),
-              t.identifier(INIT_PARAMETER_NAME)
-            )
-          ),
-        ]),
+        t.identifier(INIT_PARAMETER_NAME),
         t.blockStatement([
           t.expressionStatement(
             t.assignmentExpression('=',
