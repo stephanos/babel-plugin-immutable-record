@@ -41,7 +41,7 @@ describe('applying record transformer to', () => {
     });
 
     it('with custom decorator name', () => {
-      testFixture('custom-decorator-name', { decoratorName: 'Data' });
+      testFixture('custom-decorator-name', { decorator: 'Data' });
     });
 
     describe('with a constructor', () => {

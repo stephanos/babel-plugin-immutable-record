@@ -319,7 +319,7 @@ function createGetters(t, properties) {
 }
 
 function makeImmutable(t, classPath, opts) {
-  const decoratorName = opts.decoratorName || DECORATOR_DEFAULT_NAME;
+  const decoratorName = opts.decorator || DECORATOR_DEFAULT_NAME;
 
   const decoratorPath = findDecorator(classPath, decoratorName);
   if (decoratorPath === undefined) {
