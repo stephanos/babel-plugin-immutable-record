@@ -1,8 +1,6 @@
-/* @flow */
-
 import Record from '../decorator';
-import { Iterable, List, Map } from 'immutable';
-import ShallowRecord from '../shallow-record/output';
+
+import { Iterable, Map, Set } from 'immutable';
 
 function toMap(v) {
   if (v instanceof Iterable) {
@@ -26,19 +24,8 @@ function toMap(v) {
     if (init instanceof Map) {
       this.data = init;
     } else {
-      this.data = Map({
-        recordField: init.recordField,
-        recordsField: List(init.recordsField)
-      });
+      this.data = Map({});
     }
-  }
-
-  get recordField(): ShallowRecord {
-    return this.data.get('recordField');
-  }
-
-  get recordsField(): List<ShallowRecord> {
-    return this.data.get('recordsField');
   }
 
   update(update: MyRecordUpdate): MyRecord {
@@ -51,12 +38,8 @@ function toMap(v) {
 
 }
 
-type MyRecordUpdate = { recordField?: ShallowRecord;
-  recordsField?: ShallowRecord[];
-  [key: string]: void;
+type MyRecordUpdate = { [key: string]: void;
 };
-type MyRecordInit = { recordField: ShallowRecord;
-  recordsField: ShallowRecord[];
-  [key: string]: void;
+type MyRecordInit = { [key: string]: void;
 };
 export default MyRecord;

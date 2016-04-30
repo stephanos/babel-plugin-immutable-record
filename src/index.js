@@ -37,6 +37,18 @@ function findDecorator(classPath, name) {
   return ret;
 }
 
+function findImport(filePath, name) {
+  let ret;
+  filePath.traverse({
+    ImportDeclaration(importPath) {
+      if (importPath.node.source.value === name) {
+        ret = importPath;
+      }
+    },
+  });
+  return ret;
+}
+
 function getInnerType(typeAnnotation) {
   let innerType = typeAnnotation;
   while (innerType && innerType.typeAnnotation) {
@@ -53,15 +65,21 @@ function setSuperClass(classPath, superClassNode) {
   classPath.node.superClass = superClassNode;
 }
 
-function createImportForImmutableMap(t, includeList) {
-  const importsFromImmutable = [
-    t.importSpecifier(t.identifier('Iterable'), t.identifier('Iterable')),
-    t.importSpecifier(t.identifier('Map'), t.identifier('Map')),
-  ];
-  if (includeList) {
-    importsFromImmutable.unshift(t.importSpecifier(t.identifier('List'), t.identifier('List')));
+function createImportForImmutableMap(t, existingImportPath, includeListType) {
+  const toImport = new Set(['Iterable', 'Map']);
+
+  if (existingImportPath) {
+    existingImportPath.node.specifiers.forEach(s => toImport.add(s.imported.name));
   }
-  return t.importDeclaration(importsFromImmutable, t.stringLiteral('immutable'));
+
+  if (includeListType) {
+    toImport.add('List');
+  }
+
+  const specifiers = [];
+  toImport.forEach(i => specifiers.push(t.importSpecifier(t.identifier(i), t.identifier(i))));
+  specifiers.sort((x, y) => x.imported.name > y.imported.name);
+  return t.importDeclaration(specifiers, t.stringLiteral('immutable'));
 }
 
 function createToMapFunction(t, superClassNode) {
@@ -353,10 +371,16 @@ function makeImmutable(t, classPath, opts) {
 
   let hasDecoratorImport = false;
   const fileBody = classPath.parentPath.node.body;
+  const existingImmutableImportPath = findImport(classPath.parentPath, 'immutable');
   for (const i in fileBody) {
     if (t.isImportDeclaration(fileBody[i])) {
       const hasArrayType = classBody.filter((member) => getInnerType(member.typeAnnotation)).length > 0;
-      fileBody.splice(i + 1, 0, createImportForImmutableMap(t, hasArrayType));
+      const immutableImport = createImportForImmutableMap(t, existingImmutableImportPath, hasArrayType);
+      if (existingImmutableImportPath) {
+        existingImmutableImportPath.replaceWith(immutableImport);
+      } else {
+        fileBody.splice(i + 1, 0, immutableImport);
+      }
       hasDecoratorImport = true;
       break;
     }

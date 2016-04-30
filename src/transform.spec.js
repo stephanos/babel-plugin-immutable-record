@@ -132,4 +132,12 @@ describe('applying record transformer to', () => {
   describe('not a record', () => {
     testFixture('non-record');
   });
+
+  describe('a file', () => {
+    describe('that already imports the \'immutable\' package', () => {
+      it('should merge the imports', () => {
+        testFixture('merge-immutable-import');
+      });
+    });
+  });
 });

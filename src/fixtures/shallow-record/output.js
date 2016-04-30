@@ -2,7 +2,7 @@
 
 import Record from '../decorator';
 
-import { List, Iterable, Map } from 'immutable';
+import { Iterable, List, Map } from 'immutable';
 
 function toMap(v) {
   if (v instanceof Iterable) {
