@@ -103,23 +103,6 @@ function createToMapFunction(t, superClassNode) {
   );
 }
 
-// t.callExpression(
-//   t.identifier('Map'), [
-//     t.objectExpression(properties.map((prop) => {
-//       const propRef = t.memberExpression(t.thisExpression(), t.identifier(`__${prop.key.name}`));
-//       const mapVal =
-//         isPrimitiveType(t, prop.typeAnnotation)
-//           ? propRef
-//           : t.conditionalExpression(
-//             t.binaryExpression('instanceof', propRef, superClassNode),
-//             t.callExpression(t.memberExpression(propRef, t.identifier(TO_MAP_METHOD_NAME)), []),
-//             propRef
-//           );
-//       return t.objectProperty(t.identifier(prop.key.name), mapVal);
-//     })),
-//   ]
-// )
-
 function createToMapMethod(t) {
   const result = t.classMethod('method', t.identifier(TO_MAP_METHOD_NAME), [],
     t.blockStatement([
