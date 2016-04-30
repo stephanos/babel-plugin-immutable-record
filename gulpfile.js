@@ -41,18 +41,6 @@ gulp.task('build', function () {
     .pipe(gulp.dest('dist'));
 });
 
-gulp.task('build-test', function () {
-  return gulp.src(['src/fixtures/*/output.js'])
-    .pipe(sourcemaps.init())
-    .pipe(babel())
-    .on('error', handleError)
-    .pipe(rename(function (path) {
-      path.extname = '.es6.js';
-    }))
-    .pipe(sourcemaps.write())
-    .pipe(gulp.dest('dist'));
-});
-
 gulp.task('typecheck', function() {
   return gulp.src(['src/**/*.js', '!src/fixtures/**/input.js'])
     .pipe(flow({
@@ -116,7 +104,7 @@ gulp.task('_daemon', (done) => {
 
 
 gulp.task('package',
-  gulp.series('build', 'build-test', 'lint', 'typecheck', 'unit-test', 'coveralls'));
+  gulp.series('build', 'lint', 'typecheck', 'unit-test', 'coveralls'));
 
 gulp.task('dev',
   gulp.series('_daemon', 'clean', 'package', 'watch'));

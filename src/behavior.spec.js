@@ -1,3 +1,5 @@
+/* @flow */
+
 import assert from 'assert';
 import { List, Map } from 'immutable';
 
@@ -13,9 +15,13 @@ describe('an immutable record', () => {
         stringField: 'string',
       });
 
-      assert.equal(record.booleanField, true);
-      assert.equal(record.numberField, 42);
-      assert.equal(record.stringField, 'string');
+      const b: bool = record.booleanField;
+      const n: number = record.numberField;
+      const s: string = record.stringField;
+
+      assert.equal(n, 42);
+      assert.equal(b, true);
+      assert.equal(s, 'string');
     });
 
     it('for an array field', () => {
@@ -25,7 +31,8 @@ describe('an immutable record', () => {
         stringField: 'string',
       });
 
-      assert.deepEqual(record.arrayField, List(['John', 'Ringo']));
+      const a: List<string> = record.arrayField;
+      assert.deepEqual(a, List(['John', 'Ringo']));
     });
 
     it('for a record field', () => {
