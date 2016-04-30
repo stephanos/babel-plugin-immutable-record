@@ -103,7 +103,7 @@ an additional task to your existing one. The output of the plugin
 should be part of the source code, not the transpiled build.
 Otherwise, the type checking wouldn't make much sense.
 
-**(4)** Finally, you needs to define the decorator in your source code:
+**(4)** Finally, you need to define the decorator in your source code:
 
 ```js
 /* @flow */
