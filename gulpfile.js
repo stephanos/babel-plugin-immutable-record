@@ -8,7 +8,6 @@ const isparta = require('isparta');
 const gulpif = require('gulp-if');
 const babel = require('gulp-babel');
 const mocha = require('gulp-mocha');
-const rename = require('gulp-rename');
 const eslint = require('gulp-eslint');
 const espower = require('gulp-espower');
 const istanbul = require('gulp-istanbul');
@@ -32,8 +31,13 @@ gulp.task('clean', function(done) {
   done();
 });
 
+gulp.task('copy', function () {
+  return gulp.src('src/**/*.js')
+    .pipe(gulp.dest('dist'));
+});
+
 gulp.task('build', function () {
-  return gulp.src(['src/**/*.js'])
+  return gulp.src(['src/**/*.js', '!src/fixtures/**/*.js', '!src/*.spec.js'])
     .pipe(sourcemaps.init())
     .pipe(babel())
     .on('error', handleError)
@@ -56,14 +60,14 @@ gulp.task('lint', function () {
 });
 
 gulp.task('unit-test', function (done) {
-  gulp.src(['src/**/*.js', '!src/**/*.spec.js', '!src/fixtures/**/*.js'])
+  gulp.src(['dist/*.js', '!dist/*.spec.js'])
     .pipe(istanbul({
       instrumenter: isparta.Instrumenter,
       includeUntested: true
     }))
     .pipe(istanbul.hookRequire())
     .on('finish', function() {
-      gulp.src(['src/**/*.spec.js', '!src/types.spec.js'], {read: false})
+      gulp.src(['dist/*.spec.js'], {read: false})
         .pipe(mocha({
           ui: 'bdd',
           reporter: 'dot',
@@ -104,7 +108,7 @@ gulp.task('_daemon', (done) => {
 
 
 gulp.task('package',
-  gulp.series('build', 'lint', 'typecheck', 'unit-test', 'coveralls'));
+  gulp.series('copy', 'build', 'lint', 'typecheck', 'unit-test', 'coveralls'));
 
 gulp.task('dev',
   gulp.series('_daemon', 'clean', 'package', 'watch'));
