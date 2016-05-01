@@ -83,27 +83,30 @@ console.log(newBand.members.get(3)); // prints 'Barney'
 npm install babel-plugin-immutable-record --save-dev
 ```
 
-**(2)** Add the plugin and its dependencies to your `.babelrc`:
+**(2)** Add the additional step to your build process, for example in Gulp 4:
 
 ```js
-{
-  "plugins": [
-    "babel-plugin-syntax-flow",
-    'babel-plugin-syntax-decorators',
-    'babel-plugin-syntax-class-properties',
-    "babel-plugin-immutable-record"
-  ]
-}
+gulp.task('precompile', function () {
+  return gulp.src('src/**/*.js')
+    .pipe(babel({
+      "plugins": [
+        "babel-plugin-syntax-flow",
+        'babel-plugin-syntax-decorators',
+        'babel-plugin-syntax-class-properties',
+        "babel-plugin-immutable-record"
+      ]
+    }))
+    .pipe(gulp.dest('src'));
+});
 ```
 
-**(3)** Add the necessary build step to your individual build process.
+And let it run as early as possible. Also have a watch on any file change.
 
-**NOTE:** Since this is a pre-compilation step you'll probably need to add
-an additional task to your existing one. The output of the plugin
+**NOTE:** This is important. The output of the plugin
 should be part of the source code, not the transpiled build.
 Otherwise, the type checking wouldn't make much sense.
 
-**(4)** Finally, you need to define the decorator in your source code:
+**(3)** Finally, you need to define the decorator in your source code:
 
 ```js
 /* @flow */
