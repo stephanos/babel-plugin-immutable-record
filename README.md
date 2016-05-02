@@ -71,7 +71,7 @@ const band = new MyBand({
 });
 console.log(band.name); // prints 'The Be Sharps'
 
-const newBand = band.update({ members: band.set(3, 'Barney') });
+const newBand = band.update({ members: band.members.set(3, 'Barney') });
 console.log(newBand.members.get(3)); // prints 'Barney'
 ```
 
