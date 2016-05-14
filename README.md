@@ -86,8 +86,10 @@ npm install babel-plugin-immutable-record --save-dev
 **(2)** Add the additional step to your build process, for example in Gulp 4:
 
 ```js
-gulp.task('precompile', function () {
-  return gulp.src('src/**/*.js')
+var rename = require('gulp-rename');
+
+gulp.task('generate', function () {
+  return gulp.src('src/**/*.t.js')
     .pipe(babel({
       "plugins": [
         "babel-plugin-syntax-flow",
@@ -96,15 +98,20 @@ gulp.task('precompile', function () {
         "babel-plugin-immutable-record"
       ]
     }))
+    .pipe(rename((path) => { path.basename = path.basename.replace('.t', '') }))
     .pipe(gulp.dest('src'));
+});
+
+gulp.task('watch', function () {
+  gulp.watch(['src/**/*.t.js'], gulp.series('generate'));
+  // ...
 });
 ```
 
-And let it run as early as possible. Also have a watch on any file change.
-
 **NOTE:** This is important. The output of the plugin
 should be part of the source code, not the transpiled build.
-Otherwise, the type checking wouldn't make much sense.
+Also, your regular watch task should ignore `*.t.js` and
+NOT trigger the `generate` task - otherwise you created an endless loop.
 
 **(3)** Finally, you need to define the decorator in your source code:
 
