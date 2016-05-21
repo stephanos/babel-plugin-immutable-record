@@ -16,8 +16,8 @@ function toMap(v) {
   return v;
 }
 
-/*::`*/@Record('name')
-/*::`;*/class MyRecord extends Record.Base {
+@Record('name')
+class MyRecord extends Record.Base {
   data: Map<string, any>;
 
   constructor(init: MyRecordInit) {

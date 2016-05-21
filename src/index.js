@@ -324,8 +324,6 @@ function makeImmutable(t, classPath, opts) {
   if (decoratorPath === undefined) {
     return;
   }
-  decoratorPath.addComment('leading', '::`');
-  decoratorPath.addComment('trailing', '::`;');
 
   const classBody = classPath.node.body.body;
   const className = classPath.node.id.name;

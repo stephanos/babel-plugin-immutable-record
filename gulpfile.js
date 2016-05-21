@@ -16,6 +16,7 @@ const sourcemaps = require('gulp-sourcemaps');
 
 var daemon = false
 require("babel-core/register");
+process.env.FLOW_BIN = path.join(process.cwd(), 'node_modules/flow-bin/vendor/flow');
 
 
 function handleError(err) {
