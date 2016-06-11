@@ -38,7 +38,7 @@
     "gulp-espower": "^1.0.2",
     "gulp-flowtype": "^0.4.9",
     "gulp-if": "^2.0.1",
-    "gulp-istanbul": "^0.10.4",
+    "gulp-istanbul": "^1.0.0",
     "gulp-mocha": "^2.2.0",
     "gulp-sourcemaps": "^2.0.0-alpha",
     "gulp-util": "^3.0.7",
