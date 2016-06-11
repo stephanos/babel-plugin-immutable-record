@@ -29,7 +29,7 @@
     "eslint": "^2.10.2",
     "eslint-config-airbnb-base": "^3.0.1",
     "eslint-plugin-import": "^1.8.0",
-    "flow-bin": "^0.26.0",
+    "flow-bin": "^0.27.0",
     "gulp": "git://github.com/gulpjs/gulp.git#4.0",
     "gulp-babel": "^6.1.2",
     "gulp-callback": "0.0.3",
