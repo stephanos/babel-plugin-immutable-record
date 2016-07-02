@@ -61,13 +61,15 @@ class MyRecord extends Record.Base {
 
 }
 
-type MyRecordUpdate = { arrayField?: string[];
+type MyRecordUpdate = {
+  arrayField?: string[];
   stringField?: string;
   booleanField?: bool;
   numberField?: number;
   [key: string]: void;
 };
-type MyRecordInit = { arrayField?: string[];
+type MyRecordInit = {
+  arrayField?: string[];
   stringField: string;
   booleanField: bool;
   numberField?: number;

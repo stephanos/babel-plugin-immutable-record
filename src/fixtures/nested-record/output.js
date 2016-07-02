@@ -51,11 +51,13 @@ class MyRecord extends Record.Base {
 
 }
 
-type MyRecordUpdate = { recordField?: ShallowRecord;
+type MyRecordUpdate = {
+  recordField?: ShallowRecord;
   recordsField?: ShallowRecord[];
   [key: string]: void;
 };
-type MyRecordInit = { recordField: ShallowRecord;
+type MyRecordInit = {
+  recordField: ShallowRecord;
   recordsField: ShallowRecord[];
   [key: string]: void;
 };
