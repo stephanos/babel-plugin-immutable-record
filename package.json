@@ -34,7 +34,7 @@
     "gulp-babel": "^6.1.2",
     "gulp-callback": "0.0.3",
     "gulp-coveralls": "^0.1.4",
-    "gulp-eslint": "^2.0.0",
+    "gulp-eslint": "^3.0.1",
     "gulp-espower": "^1.0.2",
     "gulp-flowtype": "^0.4.9",
     "gulp-if": "^2.0.1",
