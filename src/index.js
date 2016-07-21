@@ -322,10 +322,17 @@ function createGetters(t, properties) {
 
 function makeImmutable(t, classPath, opts) {
   const decoratorName = opts.decorator || DECORATOR_DEFAULT_NAME;
-
   const decoratorPath = findDecorator(classPath, decoratorName);
   if (decoratorPath === undefined) {
     return;
+  }
+
+  const header = opts.header;
+  if (header) {
+    classPath.parent.leadingComments = [{
+      type: 'CommentBlock',
+      value: `\n${opts.header}\n`,
+    }];
   }
 
   const classBody = classPath.node.body.body;

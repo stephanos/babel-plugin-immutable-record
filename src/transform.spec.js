@@ -41,10 +41,6 @@ describe('applying record transformer to', () => {
       });
     });
 
-    it('with custom decorator name', () => {
-      testFixture('custom-decorator-name', { decorator: 'Data' });
-    });
-
     describe('with a constructor', () => {
       it('should fail', () => {
         assert.throws(() => testFixture('invalid-constructor'),
@@ -126,6 +122,16 @@ describe('applying record transformer to', () => {
       it('should fail', () => {
         assert.throws(() => testFixture('missing-decorator-import'),
           (err) => err.message.indexOf('file is missing the import for the \'Record\' decorator') > 0);
+      });
+    });
+
+    describe('using a custom', () => {
+      it('decorator name', () => {
+        testFixture('custom-decorator-name', { decorator: 'Data' });
+      });
+
+      it('leading comment', () => {
+        testFixture('custom-comment', { header: 'my header' });
       });
     });
   });

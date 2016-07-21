@@ -131,6 +131,8 @@ export default Record;
 
 ## Advanced
 
+### Custom decorator
+
 You can pick a custom name for the decorator (default is `Record`):
 
 ```js
@@ -145,3 +147,19 @@ You can pick a custom name for the decorator (default is `Record`):
 ```
 
 Obviously, you'll then need to adapt the decorator's source file accordingly.
+
+
+### Header
+
+To insert a custom header at the top of the file (e.g. to disable ESLint):
+
+```js
+{
+  "plugins": [
+    ...
+    ["babel-plugin-immutable-record", {
+      "header": "my comment"
+    }]
+  ]
+}
+```
