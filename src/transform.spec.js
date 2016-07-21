@@ -1,8 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import assert from 'assert';
-import plugin from './index';
 import { transform } from 'babel-core';
+
+import plugin from './index';
 
 
 const REQUIRED_PLUGINS = [
