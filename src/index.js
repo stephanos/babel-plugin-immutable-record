@@ -82,7 +82,7 @@ function createImportForImmutableMap(t, existingImportPath, includeListType) {
 
 function createToMapFunction(t, superClassNode) {
   const parameterName = 'v';
-  return t.functionDeclaration(
+  const result = t.functionDeclaration(
     t.identifier(TO_MAP_METHOD_NAME),
     [t.identifier(parameterName)],
     t.blockStatement([
@@ -117,6 +117,8 @@ function createToMapFunction(t, superClassNode) {
       t.returnStatement(t.identifier(parameterName)),
     ])
   );
+  result.returnType = t.typeAnnotation(t.anyTypeAnnotation());
+  return result;
 }
 
 function createToMapMethod(t) {
@@ -231,8 +233,9 @@ function createUpdateMethod(t, inputTypeName, outputTypeName) {
             t.memberExpression(
               t.memberExpression(t.thisExpression(), t.identifier(INTERNAL_DATA_NAME)),
               t.identifier('merge')
-            ),
-            [t.identifier(UPDATE_PARAMETER_NAME)]
+            ), [
+              t.callExpression(t.identifier('Map'), [t.identifier(UPDATE_PARAMETER_NAME)]),
+            ]
           )
         )
       ),

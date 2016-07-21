@@ -4,7 +4,7 @@ import Record from '../decorator';
 import { Iterable, List, Map } from 'immutable';
 import ShallowRecord from '../shallow-record/output';
 
-function toMap(v) {
+function toMap(v): any {
   if (v instanceof Iterable) {
     return v.map(toMap);
   }
@@ -41,7 +41,7 @@ class MyRecord extends Record.Base {
 
   update(update: MyRecordUpdate): MyRecord {
     const updated = Object.create(MyRecord.prototype);
-    updated.data = this.data.merge(update);
+    updated.data = this.data.merge(Map(update));
     return updated;
   }
 

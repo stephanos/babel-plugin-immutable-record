@@ -28,11 +28,8 @@ declare interface ITest extends IRunnable {
 
 declare interface ITestDefinition {
   (expectation: string, assertion?: () => void | Promise<any>): ITest;
-  (expectation: string, assertion?: (done: MochaDone) => void): ITest;
   only(expectation: string, assertion?: () => void): ITest;
-  only(expectation: string, assertion?: (done: MochaDone) => void): ITest;
   skip(expectation: string, assertion?: () => void): void;
-  skip(expectation: string, assertion?: (done: MochaDone) => void): void;
   timeout(ms: number): void;
 }
 
@@ -44,16 +41,9 @@ declare interface IContextDefinition {
 }
 
 declare function before(action: () => void): void;
-declare function before(action: (done: MochaDone) => void): void;
-
 declare function beforeEach(action: () => void): void;
-declare function beforeEach(action: (done: MochaDone) => void): void;
-
 declare function after(action: () => void): void;
-declare function after(action: (done: MochaDone) => void): void;
-
 declare function afterEach(action: () => void): void;
-declare function afterEach(action: (done: MochaDone) => void): void;
 
 declare var it: ITestDefinition;
 declare var describe: IContextDefinition;

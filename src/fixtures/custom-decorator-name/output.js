@@ -2,7 +2,7 @@ import Data from '../decorator';
 
 import { Iterable, Map } from 'immutable';
 
-function toMap(v) {
+function toMap(v): any {
   if (v instanceof Iterable) {
     return v.map(toMap);
   }
@@ -28,7 +28,7 @@ class MyRecord extends Data.Base {
 
   update(update: MyRecordUpdate): MyRecord {
     const updated = Object.create(MyRecord.prototype);
-    updated.data = this.data.merge(update);
+    updated.data = this.data.merge(Map(update));
     return updated;
   }
 
