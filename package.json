@@ -28,7 +28,7 @@
     "del": "^2.2.2",
     "eslint": "^3.3.1",
     "eslint-config-airbnb-base": "^5.0.3",
-    "eslint-plugin-import": "^1.14.0",
+    "eslint-plugin-import": "^2.2.0",
     "flow-bin": "^0.31.1",
     "gulp": "git://github.com/gulpjs/gulp.git#4.0",
     "gulp-babel": "^6.1.2",
