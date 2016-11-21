@@ -40,7 +40,7 @@
     "gulp-if": "^2.0.1",
     "gulp-istanbul": "^1.1.1",
     "gulp-mocha": "^3.0.1",
-    "gulp-sourcemaps": "^2.0.0-alpha",
+    "gulp-sourcemaps": "^2.2.1",
     "gulp-util": "^3.0.7",
     "isparta": "^4.0.0",
     "power-assert": "^1.4.1"
