@@ -15,7 +15,7 @@ describe('an immutable record', () => {
         stringField: 'string',
       });
 
-      const b: bool = record.booleanField;
+      const b: boolean = record.booleanField;
       const n: number = record.numberField;
       const s: string = record.stringField;
 
@@ -48,22 +48,12 @@ describe('an immutable record', () => {
     });
   });
 
-  it('should not be mutable', () => {
-    it('for primitive fields', () => {
-      const record = new ShallowRecord({
-        booleanField: true, stringField: 'string' });
+  it('should not allow mutation', () => {
+    const record = new ShallowRecord({
+      booleanField: true, stringField: 'string' });
 
-      assert.throws(() => { record.booleanField = false; },
-        (err) => err.message.indexOf('Cannot set property booleanField') >= 0);
-    });
-
-    it('for array field', () => {
-      const record = new ShallowRecord({
-        booleanField: true, stringField: 'string' });
-
-      record.arrayField.push('test');
-      assert.equal(record.arrayField, List());
-    });
+    record.arrayField.push('test');
+    assert.equal(record.arrayField, List());
   });
 
   it('should not change after update', () => {

@@ -21,7 +21,7 @@ function internalMapType(t) {
     t.typeParameterInstantiation([
       t.stringTypeAnnotation(),
       t.anyTypeAnnotation(),
-    ])
+    ]),
   );
 }
 
@@ -88,34 +88,34 @@ function createToMapFunction(t, superClassNode) {
     t.blockStatement([
       t.ifStatement(
         t.binaryExpression(
-          'instanceof', t.identifier(parameterName), t.identifier('Iterable')
+          'instanceof', t.identifier(parameterName), t.identifier('Iterable'),
         ),
         t.blockStatement([
           t.returnStatement(
             t.callExpression(
               t.memberExpression(t.identifier(parameterName), t.identifier('map')),
-              [t.identifier(TO_MAP_METHOD_NAME)]
-            )
+              [t.identifier(TO_MAP_METHOD_NAME)],
+            ),
           ),
         ]),
-        null
+        null,
       ),
       t.ifStatement(
         t.binaryExpression(
-          'instanceof', t.identifier(parameterName), superClassNode
+          'instanceof', t.identifier(parameterName), superClassNode,
         ),
         t.blockStatement([
           t.returnStatement(
             t.callExpression(
               t.memberExpression(t.identifier(parameterName), t.identifier(TO_MAP_METHOD_NAME)),
-              []
-            )
+              [],
+            ),
           ),
         ]),
-        null
+        null,
       ),
       t.returnStatement(t.identifier(parameterName)),
-    ])
+    ]),
   );
   result.returnType = t.typeAnnotation(t.anyTypeAnnotation());
   return result;
@@ -127,10 +127,10 @@ function createToMapMethod(t) {
       t.returnStatement(
         t.callExpression(
           t.identifier(TO_MAP_METHOD_NAME),
-          [t.memberExpression(t.thisExpression(), t.identifier(INTERNAL_DATA_NAME))]
-        )
+          [t.memberExpression(t.thisExpression(), t.identifier(INTERNAL_DATA_NAME))],
+        ),
       ),
-    ])
+    ]),
   );
   result.returnType = t.typeAnnotation(internalMapType(t));
   return result;
@@ -146,9 +146,9 @@ function createUpdateDataType(t, name, properties) {
       return typeProp;
     }), [
       t.objectTypeIndexer(
-        t.identifier('key'), t.stringTypeAnnotation(), t.voidTypeAnnotation()
+        t.identifier('key'), t.stringTypeAnnotation(), t.voidTypeAnnotation(),
       ),
-    ])
+    ]),
   );
 }
 
@@ -163,15 +163,15 @@ function createInitDataType(t, name, properties) {
       return typeProp;
     }), [
       t.objectTypeIndexer(
-        t.identifier('key'), t.stringTypeAnnotation(), t.voidTypeAnnotation()
+        t.identifier('key'), t.stringTypeAnnotation(), t.voidTypeAnnotation(),
       ),
-    ])
+    ]),
   );
 }
 
 function checkThereIsNoMemberNamed(classPath, name) {
   const membersWithName =
-    classPath.node.body.body.filter((member) => member.key.name === name);
+    classPath.node.body.body.filter(member => member.key.name === name);
 
   if (membersWithName.length !== 0) {
     throw classPath.buildCodeFrameError(`no class member with name '${name}' allowed`);
@@ -222,9 +222,9 @@ function createUpdateMethod(t, inputTypeName, outputTypeName) {
         [t.variableDeclarator(t.identifier(tmpVarName),
           t.callExpression(
             t.memberExpression(t.identifier('Object'), t.identifier('create')),
-            [t.memberExpression(t.identifier(outputTypeName), t.identifier('prototype'))]
-          )
-        )]
+            [t.memberExpression(t.identifier(outputTypeName), t.identifier('prototype'))],
+          ),
+        )],
       ),
       t.expressionStatement(
         t.assignmentExpression('=',
@@ -232,22 +232,22 @@ function createUpdateMethod(t, inputTypeName, outputTypeName) {
           t.callExpression(
             t.memberExpression(
               t.memberExpression(t.thisExpression(), t.identifier(INTERNAL_DATA_NAME)),
-              t.identifier('merge')
+              t.identifier('merge'),
             ), [
               t.callExpression(t.identifier('Map'), [t.identifier(UPDATE_PARAMETER_NAME)]),
-            ]
-          )
-        )
+            ],
+          ),
+        ),
       ),
       t.returnStatement(t.identifier(tmpVarName)),
-    ])
+    ]),
   );
   result.returnType = t.typeAnnotation(t.genericTypeAnnotation(t.identifier(outputTypeName)));
   return result;
 }
 
 function checkThereIsNoConstructor(classPath) {
-  const constructor = classPath.node.body.body.filter((member) => member.kind === 'constructor');
+  const constructor = classPath.node.body.body.filter(member => member.kind === 'constructor');
   if (constructor.length > 0) {
     throw classPath.buildCodeFrameError('a constructor is not allowed');
   }
@@ -256,7 +256,7 @@ function checkThereIsNoConstructor(classPath) {
 function createConstructor(t, inputTypeName, properties) {
   const param = t.identifier(INIT_PARAMETER_NAME);
   param.typeAnnotation = t.typeAnnotation(
-    t.genericTypeAnnotation(t.identifier(inputTypeName))
+    t.genericTypeAnnotation(t.identifier(inputTypeName)),
   );
 
   return t.classMethod('constructor', t.identifier('constructor'), [param],
@@ -271,7 +271,7 @@ function createConstructor(t, inputTypeName, properties) {
               t.callExpression(t.identifier('Map'), [
                 t.objectExpression(properties.map((prop) => {
                   let initValue = t.memberExpression(
-                    t.identifier(INIT_PARAMETER_NAME), t.identifier(prop.key.name)
+                    t.identifier(INIT_PARAMETER_NAME), t.identifier(prop.key.name),
                   );
                   if (prop.value) {
                     initValue = t.logicalExpression('||', initValue, prop.value);
@@ -281,12 +281,12 @@ function createConstructor(t, inputTypeName, properties) {
                   }
                   return t.objectProperty(t.identifier(prop.key.name), initValue);
                 })),
-              ])
-            )
+              ]),
+            ),
           ),
-        ])
+        ]),
       ),
-    ])
+    ]),
   );
 }
 
@@ -298,10 +298,10 @@ function createGetters(t, properties) {
           t.callExpression(
             t.memberExpression(
               t.memberExpression(t.thisExpression(), t.identifier(INTERNAL_DATA_NAME)),
-              t.identifier('get')
+              t.identifier('get'),
             ),
-            [t.stringLiteral(prop.key.name)]
-          )
+            [t.stringLiteral(prop.key.name)],
+          ),
         ),
       ]));
 
@@ -310,8 +310,8 @@ function createGetters(t, properties) {
       returnType = t.typeAnnotation(
         t.genericTypeAnnotation(
           t.identifier('List'),
-          t.typeParameterInstantiation([returnType.typeAnnotation.elementType])
-        )
+          t.typeParameterInstantiation([returnType.typeAnnotation.elementType]),
+        ),
       );
     }
     getter.returnType = returnType;
@@ -342,36 +342,36 @@ function makeImmutable(t, classPath, opts) {
     t.identifier(decoratorName), t.identifier(SUPER_CLASS_NAME));
   setSuperClass(classPath, superClassNode);
 
-  const properties = classBody.filter((member) => member.type === 'ClassProperty');
+  const properties = classBody.filter(member => member.type === 'ClassProperty');
   checkThereIsNoMemberNamed(classPath, INTERNAL_DATA_NAME);
   checkPropertyNames(classPath, properties);
   checkPropertyTypes(t, classPath, properties);
-  createGetters(t, properties).forEach((getter) => classBody.push(getter));
+  createGetters(t, properties).forEach(getter => classBody.push(getter));
 
   checkThereIsNoConstructor(classPath);
   const initDataType = className + INIT_PARAMETER_TYPE_SUFFIX;
   classBody.unshift(
-    createConstructor(t, initDataType, properties)
+    createConstructor(t, initDataType, properties),
   );
   classPath.insertAfter(
-    createInitDataType(t, initDataType, properties)
+    createInitDataType(t, initDataType, properties),
   );
 
   checkThereIsNoMemberNamed(classPath, UPDATE_METHOD_NAME);
   const updateDataType = className + UPDATE_PARAMETER_TYPE_SUFFIX;
   classBody.push(
-    createUpdateMethod(t, updateDataType, className)
+    createUpdateMethod(t, updateDataType, className),
   );
   classPath.insertAfter(
-    createUpdateDataType(t, updateDataType, properties)
+    createUpdateDataType(t, updateDataType, properties),
   );
 
   checkThereIsNoMemberNamed(classPath, TO_MAP_METHOD_NAME);
   classPath.insertBefore(
-    createToMapFunction(t, superClassNode)
+    createToMapFunction(t, superClassNode),
   );
   classBody.push(
-    createToMapMethod(t)
+    createToMapMethod(t),
   );
 
   const imports = findImports(classPath.parentPath);
@@ -382,7 +382,7 @@ function makeImmutable(t, classPath, opts) {
   }
 
   const existingImmutableImportPath = imports.find(i => i.node.source.value === 'immutable');
-  const hasArrayType = classBody.filter((member) => getInnerType(member.typeAnnotation)).length > 0;
+  const hasArrayType = classBody.filter(member => getInnerType(member.typeAnnotation)).length > 0;
   const immutableImport = createImportForImmutableMap(t, existingImmutableImportPath, hasArrayType);
   if (existingImmutableImportPath) {
     existingImmutableImportPath.replaceWith(immutableImport);
@@ -390,9 +390,9 @@ function makeImmutable(t, classPath, opts) {
     decoratorImport.insertAfter(immutableImport);
   }
 
-  classPath.node.body.body = classBody.filter((member) => member.type !== 'ClassProperty');
+  classPath.node.body.body = classBody.filter(member => member.type !== 'ClassProperty');
   classPath.node.body.body.unshift(t.classProperty(
-    t.identifier(INTERNAL_DATA_NAME), null, t.typeAnnotation(internalMapType(t))
+    t.identifier(INTERNAL_DATA_NAME), null, t.typeAnnotation(internalMapType(t)),
   ));
 }
 

@@ -38,8 +38,10 @@ class MyRecord extends Record.Base {
 
 }
 
-type MyRecordUpdate = { [key: string]: void;
+type MyRecordUpdate = {
+  [key: string]: void;
 };
-type MyRecordInit = { [key: string]: void;
+type MyRecordInit = {
+  [key: string]: void;
 };
 export default MyRecord;

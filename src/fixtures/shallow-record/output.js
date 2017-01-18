@@ -41,7 +41,7 @@ class MyRecord extends Record.Base {
     return this.data.get('stringField');
   }
 
-  get booleanField(): bool {
+  get booleanField(): boolean {
     return this.data.get('booleanField');
   }
 
@@ -64,14 +64,14 @@ class MyRecord extends Record.Base {
 type MyRecordUpdate = {
   arrayField?: string[];
   stringField?: string;
-  booleanField?: bool;
+  booleanField?: boolean;
   numberField?: number;
   [key: string]: void;
 };
 type MyRecordInit = {
   arrayField?: string[];
   stringField: string;
-  booleanField: bool;
+  booleanField: boolean;
   numberField?: number;
   [key: string]: void;
 };
